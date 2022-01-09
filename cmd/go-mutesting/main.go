@@ -15,7 +15,9 @@ import (
 	"os/exec"
 	"path/filepath"
 	"regexp"
+	"runtime"
 	"strings"
+	"sync"
 	"syscall"
 
 	"github.com/jessevdk/go-flags"
@@ -64,6 +66,7 @@ type options struct {
 		Exec    string `long:"exec" description:"Execute this command for every mutation (by default the built-in exec command is used)"`
 		NoExec  bool   `long:"no-exec" description:"Skip the built-in exec command and just generate the mutations"`
 		Timeout uint   `long:"exec-timeout" description:"Sets a timeout for the command execution (in seconds)" default:"10"`
+		Jobs    uint   `long:"jobs" description:"Allow N jobs at once" default:"1"`
 	} `group:"Exec options"`
 
 	Test struct {
@@ -159,6 +162,18 @@ func (ms *mutationStats) Total() int {
 	return ms.passed + ms.failed + ms.skipped
 }
 
+func getJobs(opts *options) int {
+	jobs := int(opts.Exec.Jobs)
+	if jobs < 0 {
+		jobs = 1
+	}
+	if jobs > runtime.NumCPU() {
+		jobs = runtime.NumCPU()
+	}
+
+	return jobs
+}
+
 func mainCmd(args []string) int {
 	var opts = &options{}
 	var mutationBlackList = map[string]struct{}{}
@@ -252,45 +267,33 @@ MUTATOR:
 
 	stats := &mutationStats{}
 
-	for _, file := range files {
-		verbose(opts, "Mutate %q", file)
+	jobs := getJobs(opts)
+	c := make(chan string)
+	var wg sync.WaitGroup
+	wg.Add(jobs)
+	for runningJobs := 0; runningJobs < jobs; runningJobs++ {
+		go func(c chan string) {
+			for {
+				file, more := <-c
+				if more == false {
+					wg.Done()
+					return
+				}
 
-		src, fset, pkg, info, err := mutesting.ParseAndTypeCheckFile(file)
-		if err != nil {
-			return exitError(err.Error())
-		}
-
-		err = os.MkdirAll(tmpDir+"/"+filepath.Dir(file), 0755)
-		if err != nil {
-			panic(err)
-		}
-
-		tmpFile := tmpDir + "/" + file
-
-		originalFile := fmt.Sprintf("%s.original", tmpFile)
-		err = osutil.CopyFile(file, originalFile)
-		if err != nil {
-			panic(err)
-		}
-		debug(opts, "Save original into %q", originalFile)
-
-		mutationID := 0
-
-		if opts.Filter.Match != "" {
-			m, err := regexp.Compile(opts.Filter.Match)
-			if err != nil {
-				return exitError("Match regex is not valid: %v", err)
-			}
-
-			for _, f := range astutil.Functions(src) {
-				if m.MatchString(f.Name.Name) {
-					mutationID = mutate(opts, mutators, mutationBlackList, mutationID, pkg, info, file, fset, src, f, tmpFile, execs, stats)
+				err := processFile(opts, tmpDir, file, mutators, mutationBlackList, execs, stats)
+				if err != returnOk {
+					// Stop execution right away.
+					wg.Done()
+					return
 				}
 			}
-		} else {
-			_ = mutate(opts, mutators, mutationBlackList, mutationID, pkg, info, file, fset, src, src, tmpFile, execs, stats)
-		}
+		}(c)
 	}
+	for _, file := range files {
+		c <- file
+	}
+	close(c)
+	wg.Wait()
 
 	if !opts.General.DoNotRemoveTmpFolder {
 		err = os.RemoveAll(tmpDir)
@@ -311,6 +314,48 @@ MUTATOR:
 	}
 
 	return exitCode
+}
+
+func processFile(opts *options, tmpDir, file string, mutators []mutatorItem, mutationBlackList map[string]struct{}, execs []string, stats *mutationStats) int {
+	verbose(opts, "Mutate %q", file)
+
+	src, fset, pkg, info, err := mutesting.ParseAndTypeCheckFile(file)
+	if err != nil {
+		return exitError(err.Error())
+	}
+
+	err = os.MkdirAll(tmpDir+"/"+filepath.Dir(file), 0755)
+	if err != nil {
+		panic(err)
+	}
+
+	tmpFile := tmpDir + "/" + file
+
+	originalFile := fmt.Sprintf("%s.original", tmpFile)
+	err = osutil.CopyFile(file, originalFile)
+	if err != nil {
+		panic(err)
+	}
+	debug(opts, "Save original into %q", originalFile)
+
+	mutationID := 0
+
+	if opts.Filter.Match != "" {
+		m, err := regexp.Compile(opts.Filter.Match)
+		if err != nil {
+			return exitError("Match regex is not valid: %v", err)
+		}
+
+		for _, f := range astutil.Functions(src) {
+			if m.MatchString(f.Name.Name) {
+				mutationID = mutate(opts, mutators, mutationBlackList, mutationID, pkg, info, file, fset, src, f, tmpFile, execs, stats)
+			}
+		}
+	} else {
+		_ = mutate(opts, mutators, mutationBlackList, mutationID, pkg, info, file, fset, src, src, tmpFile, execs, stats)
+	}
+
+	return returnOk
 }
 
 func mutate(opts *options, mutators []mutatorItem, mutationBlackList map[string]struct{}, mutationID int, pkg *types.Package, info *types.Info, file string, fset *token.FileSet, src ast.Node, node ast.Node, tmpFile string, execs []string, stats *mutationStats) int {
