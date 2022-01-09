@@ -159,7 +159,7 @@ func (ms *mutationStats) Score() float64 {
 }
 
 func (ms *mutationStats) Total() int {
-	return ms.passed + ms.failed + ms.skipped
+	return ms.passed + ms.failed
 }
 
 func getJobs(opts *options) int {
