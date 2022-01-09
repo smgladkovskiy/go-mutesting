@@ -275,7 +275,7 @@ MUTATOR:
 		go func(c chan string) {
 			for {
 				file, more := <-c
-				if more == false {
+				if !more {
 					wg.Done()
 					return
 				}
