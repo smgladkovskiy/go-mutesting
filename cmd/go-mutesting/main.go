@@ -45,6 +45,7 @@ type options struct {
 		DoNotRemoveTmpFolder bool `long:"do-not-remove-tmp-folder" description:"Do not remove the tmp folder where all mutations are saved to"`
 		Help                 bool `long:"help" description:"Show this help message"`
 		Verbose              bool `long:"verbose" description:"Verbose log output"`
+		FailOnly             bool `long:"fail-only" description:"Only log failures"`
 	} `group:"General options"`
 
 	Files struct {
@@ -391,7 +392,9 @@ func mutate(opts *options, mutators []mutatorItem, mutationBlackList map[string]
 
 					switch execExitCode {
 					case 0:
-						fmt.Printf("PASS %s\n", msg)
+						if !opts.General.FailOnly {
+							fmt.Printf("PASS %s\n", msg)
+						}
 
 						stats.passed++
 					case 1:
@@ -399,7 +402,9 @@ func mutate(opts *options, mutators []mutatorItem, mutationBlackList map[string]
 
 						stats.failed++
 					case 2:
-						fmt.Printf("SKIP %s\n", msg)
+						if !opts.General.FailOnly {
+							fmt.Printf("SKIP %s\n", msg)
+						}
 
 						stats.skipped++
 					default:
