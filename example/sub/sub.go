@@ -1,3 +1,4 @@
+// nolint: gocritic
 package sub
 
 func baz() int {

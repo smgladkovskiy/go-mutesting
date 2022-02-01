@@ -1,13 +1,18 @@
-# go-mutesting [![GoDoc](https://godoc.org/github.com/zimmski/go-mutesting?status.png)](https://godoc.org/github.com/zimmski/go-mutesting) [![Build Status](https://travis-ci.org/zimmski/go-mutesting.svg?branch=master)](https://travis-ci.org/zimmski/go-mutesting) [![Coverage Status](https://coveralls.io/repos/zimmski/go-mutesting/badge.png?branch=master)](https://coveralls.io/r/zimmski/go-mutesting?branch=master)
+# go-mutesting [![GoDoc](https://godoc.org/github.com/smgladkovskiy/go-mutesting?status.png)](https://godoc.org/github.com/smgladkovskiy/go-mutesting) [![Build Status](https://travis-ci.org/zimmski/go-mutesting.svg?branch=master)](https://travis-ci.org/zimmski/go-mutesting) [![Coverage Status](https://coveralls.io/repos/zimmski/go-mutesting/badge.png?branch=master)](https://coveralls.io/r/zimmski/go-mutesting?branch=master)
 
-go-mutesting is a framework for performing mutation testing on Go source code. Its main purpose is to find source code, which is not covered by any tests.
+go-mutesting is a framework for performing mutation testing on Go source code. 
+Its main purpose is to find source code, which is not covered by any tests.
+
+This repository was made as a reborn of original 
+[github.com/zimmski/go-mutesting](https://github.com/zimmski/go-mutesting) repository 
+because of it slow support. 
 
 ## Quick example
 
 The following command mutates the go-mutesting project with all available mutators.
 
 ```bash
-go-mutesting github.com/zimmski/go-mutesting/...
+go-mutesting github.com/smgladkovskiy/go-mutesting/...
 ```
 
 The execution of this command prints for every mutation if it was successfully tested or not. If not, the source code patch is printed out, so the mutation can be investigated. The following shows an example for a patch of a mutation.
@@ -67,7 +72,7 @@ Mutation testing is also especially interesting for comparing automatically gene
 go-mutesting includes a binary which is go-getable.
 
 ```bash
-go get -t -v github.com/zimmski/go-mutesting/...
+go get -t -v github.com/smgladkovskiy/go-mutesting/...
 ```
 
 The binary's help can be invoked by executing the binary without arguments or with the `--help` argument.
@@ -83,7 +88,7 @@ The targets of the mutation testing can be defined as arguments to the binary. E
 The following example gathers all Go files which are defined by the targets and generate mutations with all available mutators of the binary.
 
 ```bash
-go-mutesting parse.go example/ github.com/zimmski/go-mutesting/mutator/...
+go-mutesting parse.go example/ github.com/smgladkovskiy/go-mutesting/mutator/...
 ```
 
 Every mutation has to be tested using an [exec command](#write-mutation-exec-commands). By default the built-in exec command is used, which tests a mutation using the following steps:
@@ -92,10 +97,10 @@ Every mutation has to be tested using an [exec command](#write-mutation-exec-com
 - Execute all tests of the package of the mutated file.
 - Report if the mutation was killed.
 
-Alternatively the `--exec` argument can be used to invoke an external exec command. The [/scripts/exec](/scripts/exec) directory holds basic exec commands for Go projects. The [test-mutated-package.sh](/scripts/exec/test-mutated-package.sh) script implements all steps and almost all features of the built-in exec command. It can be for example used to test the [github.com/zimmski/go-mutesting/example](/example) package.
+Alternatively the `--exec` argument can be used to invoke an external exec command. The [/scripts/exec](/scripts/exec) directory holds basic exec commands for Go projects. The [test-mutated-package.sh](/scripts/exec/test-mutated-package.sh) script implements all steps and almost all features of the built-in exec command. It can be for example used to test the [github.com/smgladkovskiy/go-mutesting/example](/example) package.
 
 ```bash
-go-mutesting --exec "$GOPATH/src/github.com/zimmski/go-mutesting/scripts/exec/test-mutated-package.sh" github.com/zimmski/go-mutesting/example
+go-mutesting --exec "$GOPATH/src/github.com/smgladkovskiy/go-mutesting/scripts/exec/test-mutated-package.sh" github.com/smgladkovskiy/go-mutesting/example
 ```
 
 The execution will print the following output.
@@ -103,11 +108,11 @@ The execution will print the following output.
 > **Note**: This output is from an older version of go-mutesting. Up to date versions of go-mutesting will have different mutations.
 
 ```diff
-PASS "/tmp/go-mutesting-422402775//home/zimmski/go/src/github.com/zimmski/go-mutesting/example/example.go.0" with checksum b705f4c99e6d572de509609eb0a625be
-PASS "/tmp/go-mutesting-422402775//home/zimmski/go/src/github.com/zimmski/go-mutesting/example/example.go.1" with checksum eb54efffc5edfc7eba2b276371b29836
-PASS "/tmp/go-mutesting-422402775//home/zimmski/go/src/github.com/zimmski/go-mutesting/example/example.go.2" with checksum 011df9567e5fee9bf75cbe5d5dc1c81f
---- /home/zimmski/go/src/github.com/zimmski/go-mutesting/example/example.go
-+++ /tmp/go-mutesting-422402775//home/zimmski/go/src/github.com/zimmski/go-mutesting/example/example.go.3
+PASS "/tmp/go-mutesting-422402775//home/smgladkovskiy/go/src/github.com/smgladkovskiy/go-mutesting/example/example.go.0" with checksum b705f4c99e6d572de509609eb0a625be
+PASS "/tmp/go-mutesting-422402775//home/smgladkovskiy/go/src/github.com/smgladkovskiy/go-mutesting/example/example.go.1" with checksum eb54efffc5edfc7eba2b276371b29836
+PASS "/tmp/go-mutesting-422402775//home/smgladkovskiy/go/src/github.com/smgladkovskiy/go-mutesting/example/example.go.2" with checksum 011df9567e5fee9bf75cbe5d5dc1c81f
+--- /home/smgladkovskiy/go/src/github.com/smgladkovskiy/go-mutesting/example/example.go
++++ /tmp/go-mutesting-422402775//home/smgladkovskiy/go/src/github.com/smgladkovskiy/go-mutesting/example/example.go.3
 @@ -16,7 +16,7 @@
         }
 
@@ -117,11 +122,11 @@ PASS "/tmp/go-mutesting-422402775//home/zimmski/go/src/github.com/zimmski/go-mut
         }
 
         n++
-FAIL "/tmp/go-mutesting-422402775//home/zimmski/go/src/github.com/zimmski/go-mutesting/example/example.go.3" with checksum 82fc14acf7b561598bfce25bf3a162a2
-PASS "/tmp/go-mutesting-422402775//home/zimmski/go/src/github.com/zimmski/go-mutesting/example/example.go.4" with checksum 5720f1bf404abea121feb5a50caf672c
-PASS "/tmp/go-mutesting-422402775//home/zimmski/go/src/github.com/zimmski/go-mutesting/example/example.go.5" with checksum d6c1b5e25241453128f9f3bf1b9e7741
---- /home/zimmski/go/src/github.com/zimmski/go-mutesting/example/example.go
-+++ /tmp/go-mutesting-422402775//home/zimmski/go/src/github.com/zimmski/go-mutesting/example/example.go.6
+FAIL "/tmp/go-mutesting-422402775//home/smgladkovskiy/go/src/github.com/smgladkovskiy/go-mutesting/example/example.go.3" with checksum 82fc14acf7b561598bfce25bf3a162a2
+PASS "/tmp/go-mutesting-422402775//home/smgladkovskiy/go/src/github.com/smgladkovskiy/go-mutesting/example/example.go.4" with checksum 5720f1bf404abea121feb5a50caf672c
+PASS "/tmp/go-mutesting-422402775//home/smgladkovskiy/go/src/github.com/smgladkovskiy/go-mutesting/example/example.go.5" with checksum d6c1b5e25241453128f9f3bf1b9e7741
+--- /home/smgladkovskiy/go/src/github.com/smgladkovskiy/go-mutesting/example/example.go
++++ /tmp/go-mutesting-422402775//home/smgladkovskiy/go/src/github.com/smgladkovskiy/go-mutesting/example/example.go.6
 @@ -24,7 +24,6 @@
         n += bar()
 
@@ -130,14 +135,14 @@ PASS "/tmp/go-mutesting-422402775//home/zimmski/go/src/github.com/zimmski/go-mut
 
         return n
  }
-FAIL "/tmp/go-mutesting-422402775//home/zimmski/go/src/github.com/zimmski/go-mutesting/example/example.go.6" with checksum 5b1ca0cfedd786d9df136a0e042df23a
-PASS "/tmp/go-mutesting-422402775//home/zimmski/go/src/github.com/zimmski/go-mutesting/example/example.go.8" with checksum 6928f4458787c7042c8b4505888300a6
-The mutation score is 0.750000 (6 passed, 2 failed, 0 skipped, total is 8)
+FAIL "/tmp/go-mutesting-422402775//home/smgladkovskiy/go/src/github.com/smgladkovskiy/go-mutesting/example/example.go.6" with checksum 5b1ca0cfedd786d9df136a0e042df23a
+PASS "/tmp/go-mutesting-422402775//home/smgladkovskiy/go/src/github.com/smgladkovskiy/go-mutesting/example/example.go.8" with checksum 6928f4458787c7042c8b4505888300a6
+The mutation score is 0.750000 (6 Passed, 2 failed, 0 skipped, total is 8)
 ```
 
-The output shows that eight mutations have been found and tested. Six of them passed which means that the test suite failed for these mutations and the mutations were therefore killed. However, two mutations did not fail the test suite. Their source code patches are shown in the output which can be used to investigate these mutations.
+The output shows that eight mutations have been found and tested. Six of them Passed which means that the test suite failed for these mutations and the mutations were therefore killed. However, two mutations did not fail the test suite. Their source code patches are shown in the output which can be used to investigate these mutations.
 
-The summary also shows the **mutation score** which is a metric on how many mutations are killed by the test suite and therefore states the quality of the test suite. The mutation score is calculated by dividing the number of passed mutations by the number of total mutations, for the example above this would be 6/8=0.75. A score of 1.0 means that all mutations have been killed.
+The summary also shows the **mutation score** which is a metric on how many mutations are killed by the test suite and therefore states the quality of the test suite. The mutation score is calculated by dividing the number of Passed mutations by the number of total mutations, for the example above this would be 6/8=0.75. A score of 1.0 means that all mutations have been killed.
 
 ### <a name="black-list-false-positives"></a>Blacklist false positives
 
@@ -154,7 +159,7 @@ The example output of the [How do I use go-mutesting?](#how-do-i-use-go-mutestin
 The blacklist file, which is named `example.blacklist` in this example, can then be used to invoke go-mutesting.
 
 ```bash
-go-mutesting --blacklist example.blacklist github.com/zimmski/go-mutesting/example
+go-mutesting --blacklist example.blacklist github.com/smgladkovskiy/go-mutesting/example
 ```
 
 The execution will print the following output.
@@ -180,7 +185,7 @@ FAIL "/tmp/go-mutesting-208240643/example.go.3" with checksum 82fc14acf7b561598b
 PASS "/tmp/go-mutesting-208240643/example.go.4" with checksum 5720f1bf404abea121feb5a50caf672c
 PASS "/tmp/go-mutesting-208240643/example.go.5" with checksum d6c1b5e25241453128f9f3bf1b9e7741
 PASS "/tmp/go-mutesting-208240643/example.go.8" with checksum 6928f4458787c7042c8b4505888300a6
-The mutation score is 0.857143 (6 passed, 1 failed, 0 skipped, total is 7)
+The mutation score is 0.857143 (6 Passed, 1 failed, 0 skipped, total is 7)
 ```
 
 By comparing this output to the original output we can state that we now have 7 mutations instead of 8.
@@ -196,7 +201,7 @@ A mutation exec command is invoked for every mutation which is necessary to test
 
 It is important to note that each invocation should be isolated and therefore stateless. This means that an invocation must not interfere with other invocations.
 
-A set of environment variables, which define exactly one mutation, is passed on to the command.
+A set of environment variables, which define exactly one mutation, is Passed on to the command.
 
 | Name            | Description                                                               |
 | :-------------- | :------------------------------------------------------------------------ |
@@ -244,11 +249,11 @@ Examples for exec commands can be found in the [scripts](/scripts/exec) director
 
 ## <a name="write-mutators"></a>How do I write my own mutators?
 
-Each mutator must implement the `Mutator` interface of the [github.com/zimmski/go-mutesting/mutator](https://godoc.org/github.com/zimmski/go-mutesting/mutator#Mutator) package. The methods of the interface are described in detail in the source code documentation.
+Each mutator must implement the `Mutator` interface of the [github.com/smgladkovskiy/go-mutesting/mutator](https://godoc.org/github.com/smgladkovskiy/go-mutesting/mutator#Mutator) package. The methods of the interface are described in detail in the source code documentation.
 
-Additionally each mutator has to be registered with the `Register` function of the [github.com/zimmski/go-mutesting/mutator](https://godoc.org/github.com/zimmski/go-mutesting/mutator#Mutator) package to make it usable by the binary.
+Additionally each mutator has to be registered with the `Register` function of the [github.com/smgladkovskiy/go-mutesting/mutator](https://godoc.org/github.com/smgladkovskiy/go-mutesting/mutator#Mutator) package to make it usable by the binary.
 
-Examples for mutators can be found in the [github.com/zimmski/go-mutesting/mutator](https://godoc.org/github.com/zimmski/go-mutesting/mutator) package and its sub-packages.
+Examples for mutators can be found in the [github.com/smgladkovskiy/go-mutesting/mutator](https://godoc.org/github.com/smgladkovskiy/go-mutesting/mutator) package and its sub-packages.
 
 ## <a name="other-projects"></a>Other mutation testing projects and their flaws
 
@@ -272,4 +277,4 @@ All of them have significant flaws in comparison to go-mutesting:
 
 ## <a name="feature-request"></a>Can I make feature requests and report bugs and problems?
 
-Sure, just submit an [issue via the project tracker](https://github.com/zimmski/go-mutesting/issues/new) and I will see what I can do. Please note that I do not guarantee to implement anything soon and bugs and problems are more important to me than new features. If you need something implemented or fixed right away you can contact me via mail <mz@nethead.at> to do contract work for you.
+Sure, just submit an [issue via the project tracker](https://github.com/smgladkovskiy/go-mutesting/issues/new) and I will see what I can do. Please note that I do not guarantee to implement anything soon and bugs and problems are more important to me than new features. If you need something implemented or fixed right away you can contact me via mail <mz@nethead.at> to do contract work for you.

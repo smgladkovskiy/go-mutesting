@@ -1,3 +1,4 @@
+// nolint: gomnd,gocritic,deadcode,unused
 package example
 
 func foo() int {

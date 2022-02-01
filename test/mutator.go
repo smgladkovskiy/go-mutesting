@@ -7,15 +7,19 @@ import (
 	"io/ioutil"
 	"testing"
 
+	"github.com/smgladkovskiy/go-mutesting/pkg/mutator"
+	"github.com/smgladkovskiy/go-mutesting/pkg/parser"
+	"github.com/smgladkovskiy/go-mutesting/pkg/walk"
 	"github.com/stretchr/testify/assert"
-
-	"github.com/zimmski/go-mutesting"
-	"github.com/zimmski/go-mutesting/mutator"
 )
 
 // Mutator tests a mutator.
-// It mutates the given original file with the given mutator. Every mutation is then validated with the given changed file. The mutation overall count is validated with the given count.
+// It mutates the given original file with the given mutator.
+// Every mutation is then validated with the given changed file.
+// The mutation overall count is validated with the given count.
 func Mutator(t *testing.T, m mutator.Mutator, testFile string, count int) {
+	t.Helper()
+
 	// Test if mutator is not nil
 	assert.NotNil(t, m)
 
@@ -24,18 +28,18 @@ func Mutator(t *testing.T, m mutator.Mutator, testFile string, count int) {
 	assert.Nil(t, err)
 
 	// Parse and type-check the original source code
-	src, fset, pkg, info, err := mutesting.ParseAndTypeCheckFile(testFile, `-tags=test`)
+	src, fset, pkg, info, err := parser.ParseAndTypeCheckFile(testFile, `-tags=test`)
 	assert.Nil(t, err)
 
 	// Mutate a non relevant node
 	assert.Nil(t, m(pkg, info, src))
 
 	// Count the actual mutations
-	n := mutesting.CountWalk(pkg, info, src, m)
+	n := walk.CountWalk(pkg, info, src, m)
 	assert.Equal(t, count, n)
 
 	// Mutate all relevant nodes -> test whole mutation process
-	changed := mutesting.MutateWalk(pkg, info, src, m)
+	changed := walk.MutateWalk(pkg, info, src, m)
 
 	for i := 0; i < count; i++ {
 		assert.True(t, <-changed)
@@ -49,7 +53,7 @@ func Mutator(t *testing.T, m mutator.Mutator, testFile string, count int) {
 		assert.Nil(t, err)
 
 		if !assert.Equal(t, string(changedFile), buf.String(), fmt.Sprintf("For change file %q", changedFilename)) {
-			err = ioutil.WriteFile(fmt.Sprintf("%s.%d.go.new", testFile, i), buf.Bytes(), 0644)
+			err = ioutil.WriteFile(fmt.Sprintf("%s.%d.go.new", testFile, i), buf.Bytes(), 0o644) // nolint: gosec
 			assert.Nil(t, err)
 		}
 

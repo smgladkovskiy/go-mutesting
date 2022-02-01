@@ -1,7 +1,7 @@
 .PHONY: all clean clean-coverage generate install install-dependencies install-tools lint test test-verbose test-verbose-with-coverage
 
 export ARGS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
-export PKG := github.com/zimmski/go-mutesting
+export PKG := github.com/smgladkovskiy/go-mutesting
 export ROOT_DIR := $(shell dirname $(realpath $(lastword $(MAKEFILE_LIST))))
 
 export TEST_TIMEOUT_IN_SECONDS := 240
@@ -44,11 +44,6 @@ install-tools:
 	# generation
 	go get golang.org/x/tools/cmd/stringer
 
-	# linting
-	go get golang.org/x/lint/golint/...
-	go get github.com/kisielk/errcheck/...
-	go get honnef.co/go/tools/...
-
 	# code coverage
 	go get golang.org/x/tools/cmd/cover
 	go get github.com/onsi/ginkgo/ginkgo/...
@@ -56,18 +51,49 @@ install-tools:
 	go get github.com/mattn/goveralls/...
 .PHONY: install-tools
 
-lint:
-	$(ROOT_DIR)/scripts/lint.sh
+#test:
+#	go test -race -test.timeout "$(TEST_TIMEOUT_IN_SECONDS)s" $(PKG_TEST)
+#.PHONY: test
+#
+#test-verbose:
+#	go test -race -test.timeout "$(TEST_TIMEOUT_IN_SECONDS)s" -v $(PKG_TEST)
+#.PHONY: test-verbose
+#
+#test-verbose-with-coverage:
+#	ginkgo -r -v -cover -race -skipPackage="testdata"
+#.PHONY: test-verbose-with-coverage
+
+
+# ----
+## LINTER stuff start
+
+linter_include_check:
+	@[ -f linter.mk ] && echo "linter.mk include exists" || (echo "getting linter.mk from github.com" && curl -sO https://raw.githubusercontent.com/spacetab-io/makefiles/master/golang/linter.mk)
+
 .PHONY: lint
+lint: linter_include_check
+	@make -f linter.mk go_lint
 
-test:
-	go test -race -test.timeout "$(TEST_TIMEOUT_IN_SECONDS)s" $(PKG_TEST)
-.PHONY: test
+## LINTER stuff end
+# ----
 
-test-verbose:
-	go test -race -test.timeout "$(TEST_TIMEOUT_IN_SECONDS)s" -v $(PKG_TEST)
-.PHONY: test-verbose
+# ----
+## TESTS stuff start
 
-test-verbose-with-coverage:
-	ginkgo -r -v -cover -race -skipPackage="testdata"
-.PHONY: test-verbose-with-coverage
+tests_include_check:
+	@[ -f tests.mk ] && echo "tests.mk include exists" || (echo "getting tests.mk from github.com" && curl -sO https://raw.githubusercontent.com/spacetab-io/makefiles/master/golang/tests.mk)
+
+tests: tests_include_check
+	@make -f tests.mk go_tests
+.PHONY: tests
+
+tests_html: tests_include_check
+	@make -f tests.mk go_tests_html
+	@open coverage.html
+.PHONY: tests
+
+## TESTS stuff end
+# ----
+
+build:
+	go build -mod=vendor -o bin/go-mutesting .

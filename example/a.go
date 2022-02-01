@@ -1,3 +1,4 @@
+// nolint: dogsled,deadcode,unused
 package example
 
 import (

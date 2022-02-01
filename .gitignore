@@ -21,7 +21,17 @@ _testmain.go
 
 *.exe
 *.test
+*.coverprofile
 *.prof
 
 # Cached test mutations
 testdata/*/*.new
+.idea
+.vscode
+main
+vendor
+.golangci_*.yml
+linter.mk
+tests.mk
+c.out
+bin/*

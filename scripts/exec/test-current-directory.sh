@@ -44,7 +44,7 @@ fi
 clean_up
 
 case $GOMUTESTING_RESULT in
-0) # tests passed -> FAIL
+0) # tests Passed -> FAIL
 	echo "$GOMUTESTING_DIFF"
 
 	exit 1
