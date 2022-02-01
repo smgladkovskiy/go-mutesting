@@ -1,6 +1,7 @@
 package mutation
 
 import (
+	"errors"
 	"fmt"
 	"go/ast"
 	"go/token"
@@ -10,9 +11,9 @@ import (
 	"syscall"
 
 	"github.com/smgladkovskiy/go-mutesting/pkg/errs"
+	"github.com/smgladkovskiy/go-mutesting/pkg/infection"
 	"github.com/smgladkovskiy/go-mutesting/pkg/models"
 	"github.com/smgladkovskiy/go-mutesting/pkg/utils"
-	"github.com/smgladkovskiy/go-mutesting/pkg/walk"
 	log "github.com/spacetab-io/logs-go/v2"
 )
 
@@ -69,7 +70,8 @@ func MutationsWithoutExecs(opts models.Options, pkg *types.Package, file string,
 
 	diff, err := exec.Command("diff", "-u", file, mutationFile).CombinedOutput()
 	if err != nil {
-		if e, ok := err.(*exec.ExitError); ok {
+		var e *exec.ExitError
+		if errors.As(err, &e) {
 			execExitCode = e.Sys().(syscall.WaitStatus).ExitStatus()
 		} else {
 			return models.ResultEmpty, fmt.Errorf("diff command error: %w", err)
@@ -126,9 +128,9 @@ func Mutate(
 	mutations := 0
 
 	for _, m := range mutators {
-		log.Debug().Str("mutator", m.Name).Msg("Running mutator")
+		log.Debug().Str("mutator", m.Name.String()).Msg("Running mutator")
 
-		changed := walk.MutateWalk(pkg, info, node, m.Mutator)
+		changed := infection.Launch(pkg, info, node, m.Mutator)
 
 		for {
 			_, ok := <-changed
@@ -138,6 +140,8 @@ func Mutate(
 
 			mutationFile := fmt.Sprintf("%s.%d", tmpFile, mutations)
 			checksum, duplicate, err := utils.SaveAST(mutationBlackList, mutationFile, fset, src)
+
+			// todo  rewrite if-else to switch statement
 			if err != nil {
 				log.Error().Err(err).Msg("INTERNAL ERROR")
 				stats.UnknownResults++

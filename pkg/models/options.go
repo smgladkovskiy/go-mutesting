@@ -13,8 +13,9 @@ type Options struct {
 		PrintAST  bool
 	} `group:"File Options"`
 	Mutator struct {
-		DisableMutators []string
-		ListMutators    bool
+		AvailableMutators []MutatorName
+		DisableMutators   []MutatorName
+		ListMutators      bool
 	} `group:"Mutator Options"`
 	Filter struct {
 		Match string

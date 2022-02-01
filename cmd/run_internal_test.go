@@ -11,7 +11,6 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	registerMutators()
 	registerFlags()
 
 	os.Exit(m.Run())

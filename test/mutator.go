@@ -7,9 +7,9 @@ import (
 	"io/ioutil"
 	"testing"
 
-	"github.com/smgladkovskiy/go-mutesting/pkg/mutator"
+	"github.com/smgladkovskiy/go-mutesting/pkg/infection"
+	"github.com/smgladkovskiy/go-mutesting/pkg/models"
 	"github.com/smgladkovskiy/go-mutesting/pkg/parser"
-	"github.com/smgladkovskiy/go-mutesting/pkg/walk"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -17,7 +17,7 @@ import (
 // It mutates the given original file with the given mutator.
 // Every mutation is then validated with the given changed file.
 // The mutation overall count is validated with the given count.
-func Mutator(t *testing.T, m mutator.Mutator, testFile string, count int) {
+func Mutator(t *testing.T, m models.Mutator, testFile string, count int) {
 	t.Helper()
 
 	// Test if mutator is not nil
@@ -35,11 +35,11 @@ func Mutator(t *testing.T, m mutator.Mutator, testFile string, count int) {
 	assert.Nil(t, m(pkg, info, src))
 
 	// Count the actual mutations
-	n := walk.CountWalk(pkg, info, src, m)
+	n := infection.ResultsCount(pkg, info, src, m)
 	assert.Equal(t, count, n)
 
 	// Mutate all relevant nodes -> test whole mutation process
-	changed := walk.MutateWalk(pkg, info, src, m)
+	changed := infection.Launch(pkg, info, src, m)
 
 	for i := 0; i < count; i++ {
 		assert.True(t, <-changed)

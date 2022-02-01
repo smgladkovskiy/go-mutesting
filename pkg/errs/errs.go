@@ -13,4 +13,7 @@ var (
 	ErrUnknownMutator = errors.New("unknown mutator")
 
 	ErrWrongExitCode = errors.New("wrong exit code")
+
+	ErrNilMutatorFunction = errors.New("mutator function is nil")
+	ErrMutatorRegistered  = errors.New("mutator function is nil")
 )

@@ -8,11 +8,11 @@ import (
 	"sync"
 
 	"github.com/smgladkovskiy/go-mutesting/pkg/errs"
+	"github.com/smgladkovskiy/go-mutesting/pkg/infection"
 	"github.com/smgladkovskiy/go-mutesting/pkg/models"
 	"github.com/smgladkovskiy/go-mutesting/pkg/mutation"
 	"github.com/smgladkovskiy/go-mutesting/pkg/parser"
 	"github.com/smgladkovskiy/go-mutesting/pkg/utils"
-	"github.com/smgladkovskiy/go-mutesting/pkg/walk"
 	log "github.com/spacetab-io/logs-go/v2"
 	"github.com/spf13/cobra"
 	"github.com/zimmski/go-tool/importing"
@@ -23,14 +23,14 @@ const (
 )
 
 func run(cmd *cobra.Command, args []string) error {
-	opts := fillOpts(cmd.PersistentFlags(), args)
-
-	lvl := "info"
-	if opts.General.Debug {
-		lvl = "debug"
+	ml, err := registerMutators()
+	if err != nil {
+		return err
 	}
 
-	if err := log.Init("test", log.Config{Level: lvl, Format: "text", NoColor: true}, "go-mutesting", "", os.Stdout); err != nil {
+	opts := fillOpts(cmd.PersistentFlags(), args)
+
+	if err := log.Init("test", log.Config{Level: level(opts), Format: "text", NoColor: true}, "go-mutesting", "", os.Stdout); err != nil {
 		return fmt.Errorf("log init error: %w", err)
 	}
 
@@ -50,7 +50,7 @@ func run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	mutators := models.GetMutators(opts.Mutator.DisableMutators)
+	mutators := models.GetMutators(ml, opts.Mutator.DisableMutators)
 
 	tmpDir, err := ioutil.TempDir("", "go-mutesting-")
 	if err != nil {
@@ -64,7 +64,7 @@ func run(cmd *cobra.Command, args []string) error {
 		wg    sync.WaitGroup
 		jobs  = utils.GetJobs(opts)
 		c     = make(chan string)
-		stats *models.MutationStats
+		stats = &models.MutationStats{}
 	)
 
 	if opts.Exec.Exec != "" {
@@ -111,10 +111,8 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	if !opts.Exec.NoExec {
-		log.Info().Msgf(
-			"The mutation score is %f (total is %d mutants: %d killed, %d escaped, %d skipped, %d duplicates)",
-			stats.Score(), stats.Total(), stats.MutantsKilled, stats.MutantsEscaped, stats.MutantsSkipped, stats.Duplicated,
-		)
+		log.Info().Msgf("The mutation score is %f (total is %d mutants: %d killed, %d escaped, %d skipped, %d duplicates)",
+			stats.Score(), stats.Total(), stats.MutantsKilled, stats.MutantsEscaped, stats.MutantsSkipped, stats.Duplicated)
 
 		if stats.Score() < opts.Test.Score {
 			return errs.ErrTestScoreWasNotReached
@@ -124,6 +122,15 @@ func run(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
+}
+
+func level(opts models.Options) string {
+	lvl := "info"
+	if opts.General.Debug {
+		lvl = "debug"
+	}
+
+	return lvl
 }
 
 func getBlacklist(blackList []string) (map[string]struct{}, error) {
@@ -173,7 +180,7 @@ func workWithFiles(opts models.Options, files []string) error {
 				return fmt.Errorf("could not open file %s: %w", file, err)
 			}
 
-			walk.PrintWalk(src)
+			infection.Results(src)
 		}
 
 		return nil

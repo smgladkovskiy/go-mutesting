@@ -5,15 +5,11 @@ import (
 	"go/types"
 
 	"github.com/smgladkovskiy/go-mutesting/pkg/astutil"
-	"github.com/smgladkovskiy/go-mutesting/pkg/mutator"
+	"github.com/smgladkovskiy/go-mutesting/pkg/models"
 )
 
-func InitCase() {
-	mutator.Register("branch/case", MutatorCase)
-}
-
 // MutatorCase implements a mutator for case clauses.
-func MutatorCase(pkg *types.Package, info *types.Info, node ast.Node) []mutator.Mutation {
+func MutatorCase(pkg *types.Package, info *types.Info, node ast.Node) []models.Mutation {
 	n, ok := node.(*ast.CaseClause)
 	if !ok {
 		return nil
@@ -21,7 +17,7 @@ func MutatorCase(pkg *types.Package, info *types.Info, node ast.Node) []mutator.
 
 	old := n.Body
 
-	return []mutator.Mutation{
+	return []models.Mutation{
 		{
 			Change: func() {
 				n.Body = []ast.Stmt{

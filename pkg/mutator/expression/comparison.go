@@ -5,12 +5,8 @@ import (
 	"go/token"
 	"go/types"
 
-	"github.com/smgladkovskiy/go-mutesting/pkg/mutator"
+	"github.com/smgladkovskiy/go-mutesting/pkg/models"
 )
-
-func InitComparison() {
-	mutator.Register("expression/comparison", MutatorComparison)
-}
 
 var comparisonMutations = map[token.Token]token.Token{
 	token.LSS: token.LEQ,
@@ -20,7 +16,7 @@ var comparisonMutations = map[token.Token]token.Token{
 }
 
 // MutatorComparison implements a mutator to change comparisons.
-func MutatorComparison(_ *types.Package, _ *types.Info, node ast.Node) []mutator.Mutation {
+func MutatorComparison(_ *types.Package, _ *types.Info, node ast.Node) []models.Mutation {
 	n, ok := node.(*ast.BinaryExpr)
 	if !ok {
 		return nil
@@ -33,7 +29,7 @@ func MutatorComparison(_ *types.Package, _ *types.Info, node ast.Node) []mutator
 		return nil
 	}
 
-	return []mutator.Mutation{
+	return []models.Mutation{
 		{
 			Change: func() {
 				n.Op = r

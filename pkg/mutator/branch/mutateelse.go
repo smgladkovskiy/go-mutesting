@@ -5,15 +5,11 @@ import (
 	"go/types"
 
 	"github.com/smgladkovskiy/go-mutesting/pkg/astutil"
-	"github.com/smgladkovskiy/go-mutesting/pkg/mutator"
+	"github.com/smgladkovskiy/go-mutesting/pkg/models"
 )
 
-func InitElse() {
-	mutator.Register("branch/else", MutatorElse)
-}
-
 // MutatorElse implements a mutator for else branches.
-func MutatorElse(pkg *types.Package, info *types.Info, node ast.Node) []mutator.Mutation {
+func MutatorElse(pkg *types.Package, info *types.Info, node ast.Node) []models.Mutation {
 	n, ok := node.(*ast.IfStmt)
 	if !ok {
 		return nil
@@ -26,7 +22,7 @@ func MutatorElse(pkg *types.Package, info *types.Info, node ast.Node) []mutator.
 
 	old := n.Else
 
-	return []mutator.Mutation{
+	return []models.Mutation{
 		{
 			Change: func() {
 				n.Else = astutil.CreateNoopOfStatement(pkg, info, old)

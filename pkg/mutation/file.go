@@ -13,6 +13,7 @@ import (
 	log "github.com/spacetab-io/logs-go/v2"
 )
 
+// ProcessFile todo isolate code that would be infected.
 func ProcessFile(
 	opts models.Options,
 	tmpDir, file string,

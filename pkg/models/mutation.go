@@ -1,4 +1,4 @@
-package mutator
+package models
 
 // Mutation defines the behavior of one mutation.
 type Mutation struct {

@@ -1,5 +1,6 @@
 package utils
 
+// nolint: gosec
 import (
 	"bytes"
 	"crypto/md5"
@@ -34,6 +35,7 @@ func SaveAST(mutationBlackList map[string]struct{}, file string, fset *token.Fil
 		return "", false, fmt.Errorf("SaveAST source formatting error: %w", err)
 	}
 
+	// nolint: gosec
 	if err := ioutil.WriteFile(file, src, 0o644); err != nil {
 		return "", false, fmt.Errorf("SaveAST file writing: %w", err)
 	}

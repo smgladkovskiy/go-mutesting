@@ -6,11 +6,39 @@ import (
 	"go/types"
 
 	"github.com/smgladkovskiy/go-mutesting/pkg/astutil"
-	"github.com/smgladkovskiy/go-mutesting/pkg/mutator"
+	"github.com/smgladkovskiy/go-mutesting/pkg/models"
 )
 
-func InitRemove() {
-	mutator.Register("statement/remove", MutatorRemoveStatement)
+// MutatorRemoveStatement implements a mutator to remove statements.
+func MutatorRemoveStatement(pkg *types.Package, info *types.Info, node ast.Node) []models.Mutation {
+	var l []ast.Stmt
+
+	switch n := node.(type) {
+	case *ast.BlockStmt:
+		l = n.List
+	case *ast.CaseClause:
+		l = n.Body
+	}
+
+	var mutations []models.Mutation
+
+	for i, ni := range l {
+		if checkRemoveStatement(ni) {
+			li := i
+			old := l[li]
+
+			mutations = append(mutations, models.Mutation{
+				Change: func() {
+					l[li] = astutil.CreateNoopOfStatement(pkg, info, old)
+				},
+				Reset: func() {
+					l[li] = old
+				},
+			})
+		}
+	}
+
+	return mutations
 }
 
 func checkRemoveStatement(node ast.Stmt) bool {
@@ -24,36 +52,4 @@ func checkRemoveStatement(node ast.Stmt) bool {
 	}
 
 	return false
-}
-
-// MutatorRemoveStatement implements a mutator to remove statements.
-func MutatorRemoveStatement(pkg *types.Package, info *types.Info, node ast.Node) []mutator.Mutation {
-	var l []ast.Stmt
-
-	switch n := node.(type) {
-	case *ast.BlockStmt:
-		l = n.List
-	case *ast.CaseClause:
-		l = n.Body
-	}
-
-	var mutations []mutator.Mutation
-
-	for i, ni := range l {
-		if checkRemoveStatement(ni) {
-			li := i
-			old := l[li]
-
-			mutations = append(mutations, mutator.Mutation{
-				Change: func() {
-					l[li] = astutil.CreateNoopOfStatement(pkg, info, old)
-				},
-				Reset: func() {
-					l[li] = old
-				},
-			})
-		}
-	}
-
-	return mutations
 }

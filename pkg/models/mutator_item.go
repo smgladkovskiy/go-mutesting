@@ -3,25 +3,24 @@ package models
 import (
 	"strings"
 
-	"github.com/smgladkovskiy/go-mutesting/pkg/mutator"
 	log "github.com/spacetab-io/logs-go/v2"
 )
 
 type MutatorItem struct {
-	Name    string
-	Mutator mutator.Mutator
+	Name    MutatorName
+	Mutator Mutator
 }
 
-func GetMutators(disableMutators []string) []MutatorItem {
+func GetMutators(ml MutatorLookup, disableMutators []MutatorName) []MutatorItem {
 	var mutators []MutatorItem
 
 MUTATOR:
-	for _, name := range mutator.List() {
+	for _, name := range ml.List() {
 		if len(disableMutators) > 0 {
 			for _, d := range disableMutators {
-				pattern := strings.HasSuffix(d, "*")
+				pattern := strings.HasSuffix(d.String(), "*")
 
-				if (pattern && strings.HasPrefix(name, d[:len(d)-2])) || (!pattern && name == d) {
+				if (pattern && strings.HasPrefix(name.String(), d[:len(d)-2].String())) || (!pattern && name == d) {
 					continue MUTATOR
 				}
 			}
@@ -29,7 +28,7 @@ MUTATOR:
 
 		log.Debug().Msgf("mutator %s enabled", name)
 
-		m, _ := mutator.New(name)
+		m, _ := ml.GetByName(name)
 		mutators = append(mutators, MutatorItem{
 			Name:    name,
 			Mutator: m,

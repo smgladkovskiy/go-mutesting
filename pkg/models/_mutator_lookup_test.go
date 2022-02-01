@@ -1,4 +1,4 @@
-package mutator_test
+package models_test
 
 import (
 	"go/ast"
@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func mockMutator(_ *types.Package, _ *types.Info, _ ast.Node) []mutator.Mutation {
+func mockMutator(_ *types.Package, _ *types.Info, _ ast.Node) []Mutation {
 	// Do nothing
 	return nil
 }

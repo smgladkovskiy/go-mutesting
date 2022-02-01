@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"os/exec"
 	"syscall"
 )
@@ -15,7 +16,9 @@ const (
 )
 
 func GetResultStatus(err error) (MutationResult, error) {
-	if e, ok := err.(*exec.ExitError); ok {
+	var e *exec.ExitError
+
+	if errors.As(err, &e) {
 		switch e.Sys().(syscall.WaitStatus).ExitStatus() {
 		case 0:
 			return ResultMutantEscaped, nil

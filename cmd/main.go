@@ -12,7 +12,6 @@ var rootCmd = &cobra.Command{
 
 func Execute() error {
 	registerFlags()
-	registerMutators()
 
 	return rootCmd.Execute()
 }

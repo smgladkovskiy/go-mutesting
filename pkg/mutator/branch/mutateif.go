@@ -5,15 +5,11 @@ import (
 	"go/types"
 
 	"github.com/smgladkovskiy/go-mutesting/pkg/astutil"
-	"github.com/smgladkovskiy/go-mutesting/pkg/mutator"
+	"github.com/smgladkovskiy/go-mutesting/pkg/models"
 )
 
-func InitIf() {
-	mutator.Register("branch/if", MutatorIf)
-}
-
 // MutatorIf implements a mutator for if and else if branches.
-func MutatorIf(pkg *types.Package, info *types.Info, node ast.Node) []mutator.Mutation {
+func MutatorIf(pkg *types.Package, info *types.Info, node ast.Node) []models.Mutation {
 	n, ok := node.(*ast.IfStmt)
 	if !ok {
 		return nil
@@ -21,7 +17,7 @@ func MutatorIf(pkg *types.Package, info *types.Info, node ast.Node) []mutator.Mu
 
 	old := n.Body.List
 
-	return []mutator.Mutation{
+	return []models.Mutation{
 		{
 			Change: func() {
 				n.Body.List = []ast.Stmt{

@@ -5,15 +5,11 @@ import (
 	"go/token"
 	"go/types"
 
-	"github.com/smgladkovskiy/go-mutesting/pkg/mutator"
+	"github.com/smgladkovskiy/go-mutesting/pkg/models"
 )
 
-func InitRemove() {
-	mutator.Register("expression/remove", MutatorRemoveTerm)
-}
-
 // MutatorRemoveTerm implements a mutator to remove expression terms.
-func MutatorRemoveTerm(_ *types.Package, _ *types.Info, node ast.Node) []mutator.Mutation {
+func MutatorRemoveTerm(_ *types.Package, _ *types.Info, node ast.Node) []models.Mutation {
 	n, ok := node.(*ast.BinaryExpr)
 	if !ok {
 		return nil
@@ -36,7 +32,7 @@ func MutatorRemoveTerm(_ *types.Package, _ *types.Info, node ast.Node) []mutator
 	x := n.X
 	y := n.Y
 
-	return []mutator.Mutation{
+	return []models.Mutation{
 		{
 			Change: func() {
 				n.X = r
