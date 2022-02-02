@@ -1,7 +1,7 @@
 //go:build test
 // +build test
 
-package example
+package statement
 
 import (
 	"fmt"
@@ -36,7 +36,8 @@ func foo() int {
 
 	switch {
 	case n < 20:
-		n++
+		_ = n
+
 	case n > 20:
 		n--
 	default:
@@ -46,7 +47,7 @@ func foo() int {
 	}
 
 	var x = 0
-	_ = x
+	x++
 
 	return n
 }

@@ -1,7 +1,7 @@
 //go:build test
 // +build test
 
-package example
+package statement
 
 import (
 	"fmt"
@@ -32,7 +32,6 @@ func foo() int {
 	n += bar()
 
 	bar()
-	bar()
 
 	switch {
 	case n < 20:
@@ -57,7 +56,8 @@ func bar() int {
 
 func statementRemoveStructInitialization() (a http.Header, b error) {
 	var err error
-	_, _, _, _ = a, b, http.Header{}, err
+
+	a, b = http.Header{}, err
 
 	return
 }

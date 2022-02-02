@@ -10,6 +10,7 @@ import (
 	"go/types"
 	"io/ioutil"
 	"path/filepath"
+	"strings"
 
 	log "github.com/spacetab-io/logs-go/v2"
 	"golang.org/x/tools/go/packages"
@@ -90,6 +91,8 @@ func ParseAndTypeCheckFile(file string, flags ...string) (*ast.File, *token.File
 
 	for _, f := range pkgInfo.Syntax {
 		if pkgInfo.Fset.Position(f.Pos()).Filename == fileAbs {
+			trimUserComments(f)
+
 			src = f
 
 			break
@@ -97,4 +100,27 @@ func ParseAndTypeCheckFile(file string, flags ...string) (*ast.File, *token.File
 	}
 
 	return src, pkgInfo.Fset, pkgInfo.Types, pkgInfo.TypesInfo, nil
+}
+
+func trimUserComments(f *ast.File) {
+	comments := make([]*ast.CommentGroup, 0)
+
+	for _, comGr := range f.Comments {
+		commentGroup := &ast.CommentGroup{List: make([]*ast.Comment, 0)}
+
+		for _, com := range comGr.List {
+			if strings.Contains(com.Text, "go:build") ||
+				strings.Contains(com.Text, "+build") {
+				commentGroup.List = append(commentGroup.List, com)
+			}
+		}
+
+		if len(commentGroup.List) > 0 {
+			comments = append(comments, commentGroup)
+		}
+	}
+
+	if len(comments) != len(f.Comments) {
+		f.Comments = comments
+	}
 }

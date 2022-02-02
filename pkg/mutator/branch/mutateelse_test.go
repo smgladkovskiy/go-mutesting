@@ -12,7 +12,7 @@ func TestMutatorElse(t *testing.T) {
 	test.Mutator(
 		t,
 		branch.MutatorElse,
-		"../../../testdata/branch/mutateelse.go",
+		"../../../test/testdata/branch/mutateelse.go",
 		1,
 	)
 }

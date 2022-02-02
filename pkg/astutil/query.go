@@ -55,10 +55,7 @@ func (w *identifierWalker) Visit(node ast.Node) ast.Visitor {
 			}
 		}
 
-		// FIXME instead of manually creating a new node, clone it and trim the node from its comments and position https://github.com/zimmski/go-mutesting/issues/49
-		w.identifiers = append(w.identifiers, &ast.Ident{
-			Name: n.Name,
-		})
+		w.identifiers = append(w.identifiers, &ast.Ident{Name: n.Name})
 
 		return nil
 	case *ast.SelectorExpr:
@@ -81,12 +78,8 @@ func (w *identifierWalker) Visit(node ast.Node) ast.Visitor {
 		}
 
 		if initialize {
-			// FIXME we need to clone the node and trim comments and position recursively https://github.com/smgladkovskiy/go-mutesting/issues/49
-			w.identifiers = append(w.identifiers, &ast.CompositeLit{
-				Type: n,
-			})
+			w.identifiers = append(w.identifiers, &ast.CompositeLit{Type: n})
 		} else {
-			// FIXME we need to clone the node and trim comments and position recursively https://github.com/smgladkovskiy/go-mutesting/issues/49
 			w.identifiers = append(w.identifiers, n)
 		}
 

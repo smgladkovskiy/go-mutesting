@@ -21,15 +21,23 @@ func Mutator(t *testing.T, m models.Mutator, testFile string, count int) {
 	t.Helper()
 
 	// Test if mutator is not nil
-	assert.NotNil(t, m)
+	if !assert.NotNil(t, m) {
+		t.FailNow()
+	}
 
 	// Read the origianl source code
 	data, err := ioutil.ReadFile(testFile)
-	assert.Nil(t, err)
+	if !assert.NoError(t, err) {
+		t.FailNow()
+	}
+
+	data = bytes.ReplaceAll(data, []byte(" // user comment"), nil)
 
 	// Parse and type-check the original source code
 	src, fset, pkg, info, err := parser.ParseAndTypeCheckFile(testFile, `-tags=test`)
-	assert.Nil(t, err)
+	if !assert.NoError(t, err) {
+		t.FailNow()
+	}
 
 	// Mutate a non relevant node
 	assert.Nil(t, m(pkg, info, src))
@@ -46,15 +54,23 @@ func Mutator(t *testing.T, m models.Mutator, testFile string, count int) {
 
 		buf := new(bytes.Buffer)
 		err = printer.Fprint(buf, fset, src)
-		assert.Nil(t, err)
+
+		if !assert.NoError(t, err) {
+			t.FailNow()
+		}
 
 		changedFilename := fmt.Sprintf("%s.%d.go", testFile, i)
 		changedFile, err := ioutil.ReadFile(changedFilename)
-		assert.Nil(t, err)
+
+		if !assert.NoError(t, err) {
+			t.FailNow()
+		}
 
 		if !assert.Equal(t, string(changedFile), buf.String(), fmt.Sprintf("For change file %q", changedFilename)) {
 			err = ioutil.WriteFile(fmt.Sprintf("%s.%d.go.new", testFile, i), buf.Bytes(), 0o644) // nolint: gosec
-			assert.Nil(t, err)
+			if !assert.NoError(t, err) {
+				t.FailNow()
+			}
 		}
 
 		changed <- true

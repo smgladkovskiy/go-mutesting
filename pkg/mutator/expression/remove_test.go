@@ -12,7 +12,7 @@ func TestMutatorRemoveTerm(t *testing.T) {
 	test.Mutator(
 		t,
 		expression.MutatorRemoveTerm,
-		"../../../testdata/expression/remove.go",
+		"../../../test/testdata/expression/remove.go",
 		6,
 	)
 }

@@ -4,7 +4,7 @@
 package main
 
 import (
-	"fmt"
+	"fmt" // user comment
 )
 
 func main() {

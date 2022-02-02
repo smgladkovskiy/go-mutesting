@@ -142,12 +142,12 @@ func Mutate(
 
 			mutationFile := fmt.Sprintf("%s.%d", tmpFile, mutations)
 			checksum, duplicate, err := utils.SaveAST(mutationBlackList, mutationFile, fset, src)
-
-			// todo  rewrite if-else to switch statement
 			if err != nil {
 				log.Error().Err(err).Msg("INTERNAL ERROR")
 				stats.UnknownResults++
-			} else if duplicate {
+			}
+
+			if err == nil && duplicate {
 				log.Debug().Str("mutationFile", mutationFile).Msg("Ignore duplicate mutationFile")
 
 				stats.Duplicated++

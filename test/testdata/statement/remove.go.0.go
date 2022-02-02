@@ -1,7 +1,7 @@
 //go:build test
 // +build test
 
-package example
+package statement
 
 import (
 	"fmt"
@@ -26,8 +26,7 @@ func foo() int {
 	if n < 0 {
 		n = 0
 	}
-
-	n++
+	_ = n
 
 	n += bar()
 
@@ -66,7 +65,8 @@ func statementRemoveStructInitialization() (a http.Header, b error) {
 func statementRemoveStringArrayMap() map[string][]string {
 	hash := "ok"
 	var hdr = make(map[string][]string)
-	_, _ = hdr, hash
+
+	hdr["Hash"] = []string{hash}
 
 	return hdr
 }

@@ -1,7 +1,7 @@
 //go:build test
 // +build test
 
-package example
+package statement
 
 import (
 	"fmt"
@@ -13,7 +13,8 @@ func foo() int {
 
 	for i := 0; i < 3; i++ {
 		if i == 0 {
-			n++
+			_ = n
+
 		} else if i == 1 {
 			n += 2
 		} else {

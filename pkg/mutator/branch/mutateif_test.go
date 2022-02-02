@@ -12,7 +12,7 @@ func TestMutatorIf(t *testing.T) {
 	test.Mutator(
 		t,
 		branch.MutatorIf,
-		"../../../testdata/branch/mutateif.go",
+		"../../../test/testdata/branch/mutateif.go",
 		2,
 	)
 }

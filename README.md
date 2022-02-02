@@ -97,7 +97,7 @@ Every mutation has to be tested using an [exec command](#write-mutation-exec-com
 - Execute all tests of the package of the mutated file.
 - Report if the mutation was killed.
 
-Alternatively the `--exec` argument can be used to invoke an external exec command. The [/scripts/exec](/scripts/exec) directory holds basic exec commands for Go projects. The [test-mutated-package.sh](/scripts/exec/test-mutated-package.sh) script implements all steps and almost all features of the built-in exec command. It can be for example used to test the [github.com/smgladkovskiy/go-mutesting/example](/example) package.
+Alternatively the `--exec` argument can be used to invoke an external exec command. The [/scripts/exec](/test/scripts/exec) directory holds basic exec commands for Go projects. The [test-mutated-package.sh](/test/scripts/exec/test-mutated-package.sh) script implements all steps and almost all features of the built-in exec command. It can be for example used to test the [github.com/smgladkovskiy/go-mutesting/example](/test/example) package.
 
 ```bash
 go-mutesting --exec "$GOPATH/src/github.com/smgladkovskiy/go-mutesting/scripts/exec/test-mutated-package.sh" github.com/smgladkovskiy/go-mutesting/example
@@ -222,7 +222,7 @@ A command must exit with an appropriate exit code.
 | 2         | The mutation was skipped, since there are other problems e.g. compilation errors.                             |
 | >2        | The mutation produced an unknown exit code which might be a flaw in the exec command.                         |
 
-Examples for exec commands can be found in the [scripts](/scripts/exec) directory.
+Examples for exec commands can be found in the [scripts](/test/scripts/exec) directory.
 
 ## <a name="list-of-mutators"></a>Which mutators are implemented?
 

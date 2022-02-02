@@ -38,7 +38,7 @@ func TestRun(t *testing.T) {
 		{
 			name: "success run example tests",
 			in: inStruct{
-				root: "../example",
+				root: "../test/example",
 				args: testArgs,
 			},
 			exp: expStruct{
@@ -49,7 +49,7 @@ func TestRun(t *testing.T) {
 		{
 			name: "success run example tests recursive",
 			in: inStruct{
-				root: "../example/...",
+				root: "../test/example/...",
 				args: testArgs,
 			},
 			exp: expStruct{
@@ -71,7 +71,7 @@ func TestRun(t *testing.T) {
 		{
 			name: "success run example tests with match",
 			in: inStruct{
-				root: "../example/...",
+				root: "../test/example/...",
 				args: []string{"--exec=../scripts/exec/test-mutated-package.sh", "--exec-timeout=1", "--match=baz", "./..."},
 			},
 			exp: expStruct{
@@ -82,7 +82,7 @@ func TestRun(t *testing.T) {
 		{
 			name: "success run example tests with score",
 			in: inStruct{
-				root: "../example",
+				root: "../test/example",
 				args: []string{"--exec-timeout=1", "--jobs=1", "--score=0.46"},
 			},
 			exp: expStruct{

@@ -1,7 +1,7 @@
 //go:build test
 // +build test
 
-package example
+package statement
 
 import (
 	"fmt"
@@ -24,8 +24,7 @@ func foo() int {
 	}
 
 	if n < 0 {
-		_ = n
-
+		n = 0
 	}
 
 	n++
@@ -41,7 +40,8 @@ func foo() int {
 	case n > 20:
 		n--
 	default:
-		n = 0
+		_ = n
+
 		fmt.Println(n)
 		func() {}()
 	}

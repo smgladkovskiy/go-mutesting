@@ -13,7 +13,7 @@ func TestMutatorRemoveStatement(t *testing.T) {
 	test.Mutator(
 		t,
 		statement.MutatorRemoveStatement,
-		"../../../testdata/statement/remove.go",
+		"../../../test/testdata/statement/remove.go",
 		17,
 	)
 }

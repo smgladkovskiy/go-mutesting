@@ -12,7 +12,7 @@ func TestMutatorComparison(t *testing.T) {
 	test.Mutator(
 		t,
 		expression.MutatorComparison,
-		"../../../testdata/expression/comparison.go",
+		"../../../test/testdata/expression/comparison.go",
 		4,
 	)
 }
