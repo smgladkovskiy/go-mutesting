@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/smgladkovskiy/go-mutesting/pkg/models"
 	"github.com/smgladkovskiy/go-mutesting/pkg/mutator/branch"
 	"github.com/smgladkovskiy/go-mutesting/pkg/mutator/expression"
@@ -39,9 +37,8 @@ func registerFlags() {
 	rootCmd.PersistentFlags().Float64("score", 0, "[Test] Minimal acceptable scores value. If result is less than given, exit code will be non-zero")
 }
 
-func registerMutators() (models.MutatorLookup, error) {
-	ml := models.MutatorLookup{}
-	mutatorItems := []models.MutatorItem{
+func registerMutators() models.MutatorsInterface {
+	ml := models.MutatorsList{
 		{"branch/case", branch.MutatorCase},
 		{"branch/else", branch.MutatorElse},
 		{"branch/if", branch.MutatorIf},
@@ -50,13 +47,7 @@ func registerMutators() (models.MutatorLookup, error) {
 		{"statement/remove", statement.MutatorRemoveStatement},
 	}
 
-	for _, mi := range mutatorItems {
-		if err := ml.Register(mi.Name, mi.Mutator); err != nil {
-			return nil, fmt.Errorf("mutator %s register error: %w", mi.Name, err)
-		}
-	}
-
-	return ml, nil
+	return &ml
 }
 
 func fillOpts(flags *pflag.FlagSet, args []string) models.Options {

@@ -8,11 +8,11 @@ import (
 )
 
 func TestMutatorRemoveTerm(t *testing.T) {
-	// t.Parallel()
+	t.Parallel()
 	test.Mutator(
 		t,
 		expression.MutatorRemoveTerm,
-		"../../testdata/expression/remove.go",
+		"../../../testdata/expression/remove.go",
 		6,
 	)
 }

@@ -8,11 +8,11 @@ import (
 )
 
 func TestMutatorCase(t *testing.T) {
-	// t.Parallel()
+	t.Parallel()
 	test.Mutator(
 		t,
 		branch.MutatorCase,
-		"../../testdata/branch/mutatecase.go",
+		"../../../testdata/branch/mutatecase.go",
 		3,
 	)
 }

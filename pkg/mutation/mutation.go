@@ -34,6 +34,7 @@ func MutationsWithExecs(
 ) (models.MutationResult, error) {
 	log.Debug().Str("cmd", opts.Exec.Exec).Msg("Execute cmd for mutation")
 
+	// nolint: gosec
 	execCommand := exec.Command(execs[0], execs[1:]...)
 
 	execCommand.Stderr = os.Stderr
@@ -101,6 +102,7 @@ func MutationsWithoutExecs(opts models.Options, pkg *types.Package, file string,
 		pkgName += "/..."
 	}
 
+	// nolint: gosec
 	test, err := exec.Command("go", "test", "-timeout", fmt.Sprintf("%ds", opts.Exec.Timeout), pkgName).CombinedOutput()
 	if err != nil {
 		return models.GetResultStatus(err)

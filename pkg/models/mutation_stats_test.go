@@ -48,8 +48,8 @@ func TestMutationStats_Score(t *testing.T) {
 		{
 			name: "Total 20, escaped: 9, killed: 11",
 			in: models.MutationStats{
-				MutantsEscaped: 9,
-				MutantsKilled:  11,
+				MutantsEscaped: 11,
+				MutantsKilled:  9,
 				MutantsSkipped: 8,
 			},
 			exp: 0.450000,
@@ -57,8 +57,8 @@ func TestMutationStats_Score(t *testing.T) {
 		{
 			name: "Total 21, escaped 10, killed 11",
 			in: models.MutationStats{
-				MutantsEscaped: 10,
-				MutantsKilled:  11,
+				MutantsEscaped: 11,
+				MutantsKilled:  10,
 				MutantsSkipped: 8,
 			},
 			exp: 0.47619047619047616,

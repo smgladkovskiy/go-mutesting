@@ -8,11 +8,11 @@ import (
 )
 
 func TestMutatorElse(t *testing.T) {
-	// t.Parallel()
+	t.Parallel()
 	test.Mutator(
 		t,
 		branch.MutatorElse,
-		"../../testdata/branch/mutateelse.go",
+		"../../../testdata/branch/mutateelse.go",
 		1,
 	)
 }

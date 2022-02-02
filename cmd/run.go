@@ -23,11 +23,6 @@ const (
 )
 
 func run(cmd *cobra.Command, args []string) error {
-	ml, err := registerMutators()
-	if err != nil {
-		return err
-	}
-
 	opts := fillOpts(cmd.PersistentFlags(), args)
 
 	if err := log.Init("test", log.Config{Level: level(opts), Format: "text", NoColor: true}, "go-mutesting", "", os.Stdout); err != nil {
@@ -50,7 +45,7 @@ func run(cmd *cobra.Command, args []string) error {
 		return err
 	}
 
-	mutators := models.GetMutators(ml, opts.Mutator.DisableMutators)
+	mutators := models.GetMutators(registerMutators(), opts.Mutator.DisableMutators)
 
 	tmpDir, err := ioutil.TempDir("", "go-mutesting-")
 	if err != nil {

@@ -8,11 +8,11 @@ import (
 )
 
 func TestMutatorIf(t *testing.T) {
-	// t.Parallel()
+	t.Parallel()
 	test.Mutator(
 		t,
 		branch.MutatorIf,
-		"../../testdata/branch/mutateif.go",
+		"../../../testdata/branch/mutateif.go",
 		2,
 	)
 }

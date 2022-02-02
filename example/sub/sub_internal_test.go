@@ -7,6 +7,7 @@ import (
 )
 
 func TestBaz(t *testing.T) {
-	// t.Parallel()
+	t.Parallel()
+
 	assert.Equal(t, baz(), 2)
 }

@@ -8,7 +8,8 @@ import (
 )
 
 func TestParseAndTypeCheckFileTypeCheckWholePackage(t *testing.T) {
-	// t.Parallel()
-	_, _, _, _, err := parser.ParseAndTypeCheckFile("astutil/create.go") // nolint: dogsled
+	t.Parallel()
+
+	_, _, _, _, err := parser.ParseAndTypeCheckFile("../astutil/create.go") // nolint: dogsled
 	assert.Nil(t, err)
 }

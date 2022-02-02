@@ -8,11 +8,11 @@ import (
 )
 
 func TestMutatorComparison(t *testing.T) {
-	// t.Parallel()
+	t.Parallel()
 	test.Mutator(
 		t,
 		expression.MutatorComparison,
-		"../../testdata/expression/comparison.go",
+		"../../../testdata/expression/comparison.go",
 		4,
 	)
 }

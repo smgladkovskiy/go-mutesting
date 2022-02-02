@@ -8,11 +8,12 @@ import (
 )
 
 func TestMutatorRemoveStatement(t *testing.T) {
-	// t.Parallel()
+	t.Parallel()
+
 	test.Mutator(
 		t,
 		statement.MutatorRemoveStatement,
-		"../../testdata/statement/remove.go",
+		"../../../testdata/statement/remove.go",
 		17,
 	)
 }
